@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>VUE6</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+	<header>
+		<div class="py-5">
+			<h1><img src="Header.png" alt=""></h1>
+		</div>
+	</header>
+	<main>
+		<div class="container" id="app">
+			<div class="cards pb-5">
+				<card v-for="card in cards" :card="card"></card>
+			</div>
+		</div>
+	</main>
+
+	<template id="card-template">
+		<div class='card mt-5'>
+			<img class='card-img-top' :src="url_image" alt=''>
+			<div class='card-body'>
+				<h5 class='card-title'>{{ card.name }}</h5>
+				<div class='card-text'>
+					<div class='identification'>
+						<p class='name'>ID</p>
+						<p class='value'>{{ card.id }}</p>
+					</div>
+				</div>
+				<div class='information'>
+					<div class='status'>
+						<p class='name'>STATUS</p>
+						<p class='value'>{{ card.status }}</p>
+					</div>
+					<div class='species'>
+						<p class='name'>SPECIES</p>
+						<p class='value'>{{ card.species }}</p>
+					</div>
+					<div class='type'>
+						<p class='name'>TYPE</p>
+						<p class='value'>{{ card.type}}</p>
+					</div>
+					<div class='gender'>
+						<p class='name'>GENDER</p>
+						<p class='value'>{{ card.gender }}</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</template>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue@1.0.18/dist/vue.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+	<script>
+		
+	Vue.component('card', {
+	props: ['card'],
+	template: "#card-template",
+	computed: {
+		url_image: function () {
+			return this.card.image;
+			}
+		}
+	})
+
+	new Vue({
+		el: "#app",
+		data: {
+			cards: []
+		},
+		created: function () {
+			axios.get("https://rickandmortyapi.com/api/character/")
+				.then(response => {
+
+					response.data.results.sort(function () {
+						return Math.random() - 0.5 
+					});
+					response.data.results.length = 6;
+
+					response.data.results.forEach(element => {
+
+						let type = element.type == "" ? "unknown" : element.type;
+
+						response = {
+							image: element.image,
+							name: element.name,
+							id: element.id,
+							status: element.status,
+							species: element.species,
+							type: type,
+							gender: element.gender
+						}
+
+						this.cards.push(response);
+
+					});
+
+				})
+				.catch(error => {
+					console.log(error);
+				})
+		}
+	})
+
+	</script>
+</body>
+</html>
